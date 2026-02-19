@@ -1,0 +1,435 @@
+Ниже представлен HTML-код, создающий дизайн страницы «Личное дело» с фотографией и всеми предоставленными данными. Страница стилизована под официальный документ, информация сгруппирована в логические блоки для удобства восприятия.
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личное дело — Самошкин Александр Леонидович</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #e6e9ef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        /* Основная карточка – личное дело */
+        .dossier {
+            max-width: 1300px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border: 1px solid rgba(0, 20, 40, 0.1);
+            transition: all 0.2s;
+        }
+
+        /* Верхняя полоса с грифом */
+        .dossier-header {
+            background: #002b4a;
+            background: linear-gradient(145deg, #0a2f44 0%, #123b54 100%);
+            padding: 18px 30px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px solid #c9a959;
+        }
+
+        .dossier-header h1 {
+            font-weight: 400;
+            font-size: 1.8rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin: 0;
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.2);
+        }
+
+        .dossier-header .ref-number {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1rem;
+            border: 1px solid #b99b4b;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Контейнер содержимого */
+        .dossier-content {
+            padding: 30px;
+        }
+
+        /* Секция с фото и ключевыми данными (как "шапка" личного дела) */
+        .photo-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+            background: #f8fafd;
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid #dde3ed;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 8px 18px -6px rgba(0,40,70,0.12);
+        }
+
+        .photo-frame {
+            flex: 0 0 220px;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1/1.2;
+            object-fit: cover;
+            border-radius: 18px;
+            box-shadow: 0 12px 25px -8px rgba(0,0,0,0.4);
+            border: 3px solid white;
+            outline: 1px solid #b0c4de;
+            background-color: #d9e2ef;
+        }
+
+        .quick-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .fullname {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #0a2f44;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            border-bottom: 2px dashed #b0c7db;
+            padding-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 12px 20px;
+        }
+
+        .quick-item {
+            display: flex;
+            align-items: baseline;
+        }
+
+        .quick-item .label {
+            font-weight: 600;
+            color: #1f4973;
+            width: 140px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .quick-item .value {
+            color: #102b3f;
+            font-weight: 500;
+            font-size: 1.05rem;
+            word-break: break-word;
+        }
+
+        /* Разделы (блоки информации) */
+        .section {
+            margin-top: 35px;
+            border-top: 2px solid #e2e8f2;
+            padding-top: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #163a5e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title span {
+            background: #eef3f9;
+            padding: 5px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #2b5f8a;
+            font-weight: 400;
+            border: 1px solid #bed3e9;
+        }
+
+        .fields-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px 30px;
+        }
+
+        .field-row {
+            display: flex;
+            align-items: flex-start;
+            border-bottom: 1px dotted #ccd9e9;
+            padding-bottom: 8px;
+        }
+
+        .field-label {
+            width: 200px;
+            font-weight: 600;
+            color: #1d3a5c;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .field-value {
+            flex: 1;
+            color: #042133;
+            font-weight: 500;
+            word-break: break-word;
+            line-height: 1.4;
+        }
+
+        /* Для длинных адресов и примечаний */
+        .multiline {
+            white-space: pre-line;
+        }
+
+        /* маленькие теги для телефонов */
+        .phone-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .phone-item {
+            display: block;
+        }
+
+        /* адаптация */
+        @media (max-width: 900px) {
+            .fields-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .photo-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .photo-frame {
+                flex-basis: auto;
+                width: 220px;
+            }
+            .quick-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .quick-item .label {
+                width: auto;
+            }
+            .field-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .field-label {
+                width: auto;
+                margin-bottom: 4px;
+            }
+        }
+
+        /* Дополнительно: выделим паспортные данные и важные номера */
+        .highlight-value {
+            background: #edf4fd;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #003366;
+        }
+
+        /* маленькая подпись внизу */
+        .footer-note {
+            margin-top: 45px;
+            padding: 16px 24px;
+            background: #f2f6fc;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            color: #2d496c;
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid #cdddec;
+        }
+    </style>
+</head>
+<body>
+    <div class="dossier">
+        <!-- Шапка дела -->
+        <div class="dossier-header">
+            <h1>⚖️ ЛИЧНОЕ ДЕЛО № А-7842/21</h1>
+            <div class="ref-number">ФОРМА 1-ДП • 2025</div>
+        </div>
+
+        <div class="dossier-content">
+            <!-- БЛОК С ФОТО И ОСНОВНЫМИ ДАННЫМИ -->
+            <div class="photo-section">
+                <div class="photo-frame">
+                    <!-- фото sal.jpeg должно лежать в той же папке, что и html -->
+                    <img src="sal.jpeg" alt="Фото Самошкина А.Л." onerror="this.src='https://via.placeholder.com/220x264?text=sal.jpeg'">
+                </div>
+                <div class="quick-info">
+                    <div class="fullname">САМОШКИН АЛЕКСАНДР ЛЕОНИДОВИЧ</div>
+                    <div class="quick-grid">
+                        <div class="quick-item"><span class="label">Дата рождения</span><span class="value">12.08.2004</span></div>
+                        <div class="quick-item"><span class="label">Место рождения</span><span class="value">г. Москва</span></div>
+                        <div class="quick-item"><span class="label">Паспорт</span><span class="value highlight-value">4518 784231</span></div>
+                        <div class="quick-item"><span class="label">СНИЛС</span><span class="value">182-007-033 23</span></div>
+                        <div class="quick-item"><span class="label">Соц. карта</span><span class="value">779248040148</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 1: КОНТАКТНАЯ ИНФОРМАЦИЯ -->
+            <div class="section">
+                <div class="section-title">📞 КОНТАКТЫ <span>личные и домашние</span></div>
+                <div class="fields-grid">
+                    <div class="field-row">
+                        <span class="field-label">Мобильные</span>
+                        <span class="field-value phone-group">
+                            <span class="phone-item">📱 7 958 833-88-40</span>
+                            <span class="phone-item">📱 7 915 339-86-74</span>
+                        </span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Домашние</span>
+                        <span class="field-value phone-group">
+                            <span class="phone-item">☎️ (495) 902-38-35</span>
+                            <span class="phone-item">☎️ (499) 902-38-35</span>
+                        </span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Дополнительный</span>
+                        <span class="field-value">📞 7 499 901-07-58</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Эл. почта</span>
+                        <span class="field-value">📧 12082004SASHA@GMAIL.COM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 2: АДРЕСА РЕГИСТРАЦИИ И ФАКТИЧЕСКИЙ -->
+            <div class="section">
+                <div class="section-title">🏠 АДРЕСА <span>регистрация / проживание</span></div>
+                <div class="fields-grid">
+                    <div class="field-row">
+                        <span class="field-label">Адрес регистрации</span>
+                        <span class="field-value multiline">13044, СВАО, Бибирево, г. Москва, ул. Лескова, д. 30, кв. 213</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Адрес фактический</span>
+                        <span class="field-value">г. Москва, ул. Лескова, д. 17А, кв. 72</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 3: УДОСТОВЕРЕНИЯ И ИДЕНТИФИКАТОРЫ -->
+            <div class="section">
+                <div class="section-title">🪪 ДОКУМЕНТЫ <span>паспорт, свидетельство, снилс</span></div>
+                <div class="fields-grid">
+                    <div class="field-row">
+                        <span class="field-label">Паспорт</span>
+                        <span class="field-value">4518 784231</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Свидетельство о рожд.</span>
+                        <span class="field-value">II-МЮ 767172</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Кем выдано</span>
+                        <span class="field-value">Медведковский отдел ЗАГС Упр. ЗАГС Москвы, 2004-09-09</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">СНИЛС</span>
+                        <span class="field-value">182-007-033 23</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">СКМ (соц. карта)</span>
+                        <span class="field-value">779248040148</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 4: СТРАХОВОЙ ПОЛИС -->
+            <div class="section">
+                <div class="section-title">🏥 МЕДИЦИНСКОЕ СТРАХОВАНИЕ <span>полис ОМС</span></div>
+                <div class="fields-grid">
+                    <div class="field-row">
+                        <span class="field-label">Тип полиса</span>
+                        <span class="field-value">ПОЛИС ОМС СТАРОГО ОБРАЗЦА</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Страховая компания</span>
+                        <span class="field-value">АО СК «СОГАЗ-Мед»</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Номер полиса</span>
+                        <span class="field-value">770000 2114624804</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Дата выдачи</span>
+                        <span class="field-value">01.03.2021</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Действует до</span>
+                        <span class="field-value">31.12.2099</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">ОГРН страховой</span>
+                        <span class="field-value">1027739008440</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ДОПОЛНИТЕЛЬНЫЕ СВЕДЕНИЯ (вынесем оставшиеся) -->
+            <div class="section">
+                <div class="section-title">📋 ПРОЧИЕ ЗАПИСИ <span>справочно</span></div>
+                <div class="fields-grid">
+                    <div class="field-row">
+                        <span class="field-label">Дом. телефон (повтор)</span>
+                        <span class="field-value">(495)9023835 / (499)9023835</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">Доп. телефон</span>
+                        <span class="field-value">74999010758</span>
+                    </div>
+                    <div class="field-row">
+                        <span class="field-label">ОГРН СК (СОГАЗ-Мед)</span>
+                        <span class="field-value">1027739008440</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Подвал дела — отметка о формировании -->
+            <div class="footer-note">
+                <span>🗂️ Дело сформировано 20.02.2026</span>
+                <span>🔒 Конфиденциально • Личный код: 7708-1208</span>
+            </div>
+        </div> <!-- end dossier-content -->
+    </div> <!-- end dossier -->
+</body>
+</html>
+```
