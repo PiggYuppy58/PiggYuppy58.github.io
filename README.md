@@ -170,7 +170,7 @@
         </div>
 
         <!-- main title with data attributes for translation -->
-        <h1 id="page-title" data-en="🚀 piggyuppy58 · game hub" data-ru="🚀 piggyuppy58 · игровой центр">🚀 piggyuppy58 · game hub</h1>
+        <h1 id="page-title" data-en="🚀 piggyuppy58 · games in browser" data-ru="🚀 piggyuppy58 · игры в браузере">🚀 piggyuppy58 · game hub</h1>
         <div class="sub" id="page-sub" data-en="click any button to launch the game (opens in new tab)" data-ru="нажми на кнопку, чтобы запустить игру (откроется в новой вкладке)">click any button to launch the game (opens in new tab)</div>
 
         <div class="button-grid">
@@ -187,7 +187,7 @@
 
             <a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%204.html" class="game-btn" target="_blank" rel="noopener" data-en="👻 FNaF 4" data-ru="👻 ФНАФ 4">👻 FNaF 4</a>
 
-            <a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's.html" class="game-btn" target="_blank" rel="noopener" data-en="🎪 Five Nights at Freddy's" data-ru="🎪 Пять ночей у Фредди">🎪 Five Nights at Freddy's</a>
+            <a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's.html" class="game-btn" target="_blank" rel="noopener" data-en="🎪 Five Nights at Freddy's" data-ru="🎪 Пять ночей с Фредди">🎪 Five Nights at Freddy's</a>
 
             <a href="https://piggyuppy58.github.io/Geometry%20Dash%20Lite%20(REMAKE).html" class="game-btn" target="_blank" rel="noopener" data-en="🔷 Geometry Dash Lite (REMAKE)" data-ru="🔷 Геометри Деш Лайт (РЕМЕЙК)">🔷 Geometry Dash Lite (REMAKE)</a>
 
@@ -205,7 +205,7 @@
         </div>
 
         <footer>
-            <span class="note" id="footer-note" data-en="🎯 buttons open directly — all games hosted on piggyuppy58.github.io" data-ru="🎯 кнопки открывают игры напрямую — все игры на piggyuppy58.github.io">🎯 buttons open directly — all games hosted on piggyuppy58.github.io</span>
+            <span class="note" id="footer-note" data-en="🎯 buttons open directly — all games hosted on piggyuppy58.github.io" data-ru="🎯 кнопки открывают игры напрямую — все игры сделаны piggyuppy58">🎯 buttons open directly — all games hosted by piggyuppy58</span>
         </footer>
     </div>
 
