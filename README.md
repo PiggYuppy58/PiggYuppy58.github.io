@@ -139,7 +139,7 @@
         </div>
 
         <footer>
-            <span class="note">🎯 buttons open directly — all games hosted on piggyuppy58.github.io</span>
+            <span class="note">🎯 buttons open directly — all games hosted by piggyuppy58</span>
         </footer>
     </div>
 
