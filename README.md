@@ -1,31 +1,15 @@
 # PiggYuppy58.github.io
-https://piggyuppy58.github.io/Block%20Blast.html
-https://piggyuppy58.github.io/Color%20Water%20Sort%203D.html
-https://piggyuppy58.github.io/Five%20Nights%20at%20Epstein's.html
-https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%202.html
-https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%203.html
-https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%204.html
-https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's.html
-https://piggyuppy58.github.io/Geometry%20Dash%20Lite%20(REMAKE).html
-https://piggyuppy58.github.io/Google%20Feud.html
-https://piggyuppy58.github.io/Minecraft%201.12.2.html
-https://piggyuppy58.github.io/Minecraft%201.21.4.html
-https://piggyuppy58.github.io/Minecraft%20Indev.html
-https://piggyuppy58.github.io/R.E.P.O.html
-https://piggyuppy58.github.io/Terraria.html
-
-# Block%20Blast.html
-# Color%20Water%20Sort%203D.html
-# Five%20Nights%20at%20Epstein's.html
-# Five%20Nights%20at%20Freddy's%202.html
-# Five%20Nights%20at%20Freddy's%203.html
-# Five%20Nights%20at%20Freddy's%204.html
-# Five%20Nights%20at%20Freddy's.html
-# Geometry%20Dash%20Lite%20(REMAKE).html
-# Google%20Feud.html
-# Minecraft%201.12.2.html
-# Minecraft%201.21.4.html
-# Minecraft%20Indev.html
-# R.E.P.O.html
-# Terraria.html
-
+# https://piggyuppy58.github.io/Block%20Blast.html
+# https://piggyuppy58.github.io/Color%20Water%20Sort%203D.html
+# https://piggyuppy58.github.io/Five%20Nights%20at%20Epstein's.html
+# https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%202.html
+# https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%203.html
+# https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%204.html
+# https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's.html
+# https://piggyuppy58.github.io/Geometry%20Dash%20Lite%20(REMAKE).html
+# https://piggyuppy58.github.io/Google%20Feud.html
+# https://piggyuppy58.github.io/Minecraft%201.12.2.html
+# https://piggyuppy58.github.io/Minecraft%201.21.4.html
+# https://piggyuppy58.github.io/Minecraft%20Indev.html
+# https://piggyuppy58.github.io/R.E.P.O.html
+# https://piggyuppy58.github.io/Terraria.html
