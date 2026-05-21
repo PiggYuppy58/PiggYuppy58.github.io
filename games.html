@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игры - Мой Портал</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif; margin: 0; padding: 30px 20px;
+            background: linear-gradient(-45deg, #141e30, #243b55);
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+            color: #fff; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        .header-container { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1400px; margin-bottom: 50px; }
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1); color: #fff; text-decoration: none; padding: 12px 25px; border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2); font-weight: 500; transition: 0.3s; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 8px;
+        }
+        .back-btn:hover { background: #fff; color: #141e30; }
+        
+        h1 { font-size: 3rem; font-weight: 900; margin: 0; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 1400px; }
+        .game-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between;
+            transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .game-card:hover { transform: translateY(-7px); background: rgba(255, 255, 255, 0.1); border-color: rgba(0, 255, 170, 0.4); box-shadow: 0 10px 25px rgba(0, 255, 170, 0.15); }
+        .game-genre {
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+            background: rgba(0, 255, 170, 0.1); color: #00ffaa; display: inline-block; margin-bottom: 15px; letter-spacing: 1px;
+        }
+        .game-title { font-size: 1.4rem; font-weight: 700; margin: 0 0 20px 0; line-height: 1.3; }
+        .play-button {
+            background: rgba(255, 255, 255, 0.05); color: #fff; text-decoration: none; padding: 12px; border-radius: 12px;
+            text-align: center; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.2); transition: 0.3s;
+        }
+        .game-card:hover .play-button { background: #00ffaa; color: #141e30; border-color: #00ffaa; box-shadow: 0 0 15px rgba(0, 255, 170, 0.5); }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <a href="index.html" class="back-btn"><span>←</span> На главную</a>
+        <h1>КАТАЛОГ ИГР</h1>
+        <div style="width: 140px;"></div>
+    </div>
+    
+    <div class="game-grid">
+        <div class="game-card"><div><div class="game-genre">Аркада</div><p class="game-title">Block Blast</p></div><a href="https://piggyuppy58.github.io/Block%20Blast" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Стратегия</div><p class="game-title">State.io</p></div><a href="https://piggyuppy58.github.io/State.io" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Хоррор</div><p class="game-title">Five Nights at Epstein's</p></div><a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Epstein's" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Хоррор</div><p class="game-title">FNAF 2</p></div><a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%202" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Хоррор</div><p class="game-title">FNAF 3</p></div><a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%203" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Хоррор</div><p class="game-title">FNAF 4</p></div><a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%204" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Хоррор</div><p class="game-title">Five Nights at Freddy's</p></div><a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Ритм-игра</div><p class="game-title">Geometry Dash Lite</p></div><a href="https://piggyuppy58.github.io/Geometry%20Dash%20Lite%20(REMAKE)" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Викторина</div><p class="game-title">Google Feud</p></div><a href="https://piggyuppy58.github.io/Google%20Feud" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Minecraft</div><p class="game-title">Minecraft 1.21.4</p></div><a href="https://piggyuppy58.github.io/Minecraft%201.21.4" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Minecraft</div><p class="game-title">Minecraft 1.12.2</p></div><a href="https://piggyuppy58.github.io/Minecraft%201.12.2" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Minecraft</div><p class="game-title">Minecraft 1.8.8</p></div><a href="https://piggyuppy58.github.io/Minecraft%201.8.8.html" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Minecraft</div><p class="game-title">Minecraft 1.5.2</p></div><a href="https://piggyuppy58.github.io/Minecraft%201.5.2%20" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Minecraft</div><p class="game-title">Minecraft Beta 1.7.3</p></div><a href="https://piggyuppy58.github.io/Minecraft%20Beta%201.7.3%20" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Minecraft</div><p class="game-title">Minecraft Beta 1.3</p></div><a href="https://piggyuppy58.github.io/Minecraft%20Beta%201.3%20" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Minecraft</div><p class="game-title">Minecraft Alpha 1.2.6</p></div><a href="https://piggyuppy58.github.io/Minecraft%20Alpha%201.2.6%20" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Minecraft</div><p class="game-title">Minecraft Indev</p></div><a href="https://piggyuppy58.github.io/Minecraft%20Indev" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Экшен</div><p class="game-title">R.E.P.O.</p></div><a href="https://piggyuppy58.github.io/R.E.P.O" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Песочница</div><p class="game-title">Terraria</p></div><a href="https://piggyuppy58.github.io/Terraria" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Гонки</div><p class="game-title">Monster Tracks</p></div><a href="https://piggyuppy58.github.io/Monster%20Tracks" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Аркада</div><p class="game-title">Bridge Race</p></div><a href="https://piggyuppy58.github.io/Bridge%20Race" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Экшен</div><p class="game-title">Schoolboy Runaway</p></div><a href="https://piggyuppy58.github.io/Schoolboy%20Runaway" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Шутер</div><p class="game-title">Half Life</p></div><a href="https://piggyuppy58.github.io/Half%20Life" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Хоррор</div><p class="game-title">FNAF 4: Halloween</p></div><a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's%204_%20Halloween" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Экшен/Хоррор</div><p class="game-title">Buckshot Roulette</p></div><a href="https://piggyuppy58.github.io/Buckshot%20Roulette" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Хоррор</div><p class="game-title">FNAF: Ultimate Custom Night</p></div><a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's_%20Ultimate%20Custom%20Night" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Хоррор</div><p class="game-title">FNAF: Pizza Simulator</p></div><a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's_%20Pizza%20Simulator" class="play-button" target="_blank">Запустить</a></div>
+        <div class="game-card"><div><div class="game-genre">Хоррор</div><p class="game-title">FNAF: Sister Location</p></div><a href="https://piggyuppy58.github.io/Five%20Nights%20at%20Freddy's_%20Sister%20Location" class="play-button" target="_blank">Запустить</a></div>
+    </div>
+
+</body>
+</html>
