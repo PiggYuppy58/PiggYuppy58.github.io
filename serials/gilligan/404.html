@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Стилизация логотипа в стиле BrBa */
+        .logo-404 {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .element {
+            width: 100px;
+            height: 100px;
+            border: 4px solid #3d8c40;
+            background-color: rgba(61, 140, 64, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .element .number {
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            font-size: 14px;
+            color: #3d8c40;
+        }
+
+        .element .symbol {
+            font-size: 50px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #aaaaaa;
+            margin-bottom: 30px;
+        }
+
+        .quote {
+            font-style: italic;
+            color: #f2c94c;
+            margin-bottom: 40px;
+            border-left: 3px solid #f2c94c;
+            padding-left: 15px;
+        }
+
+        /* Группа кнопок */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            text-decoration: none;
+            color: #1a1a1a;
+            background-color: #3d8c40;
+            padding: 15px 30px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #4ead4f;
+            box-shadow: 0 0 15px rgba(61, 140, 64, 0.5);
+        }
+
+        /* Кнопка Сола Гудмана */
+        .btn-saul {
+            background-color: #f2c94c; /* Желтый цвет Better Call Saul */
+            color: #000;
+        }
+
+        .btn-saul:hover {
+            background-color: #ffd65c;
+            box-shadow: 0 0 15px rgba(242, 201, 76, 0.5);
+        }
+
+        .crystals {
+            position: absolute;
+            bottom: -20px;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(transparent, rgba(0, 191, 255, 0.1));
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-404">
+            <div class="element">
+                <span class="number">4</span>
+                <span class="symbol">Er</span>
+            </div>
+            <div class="element">
+                <span class="number">0</span>
+                <span class="symbol">Ro</span>
+            </div>
+            <div class="element">
+                <span class="number">4</span>
+                <span class="symbol">Rr</span>
+            </div>
+        </div>
+
+        <h1>Черт возьми, Джесси, мы зашли не туда!</h1>
+        
+        <div class="quote">
+            «Я не тот, кому открывают дверь и находят ошибку. Я и есть ОШИБКА!»
+        </div>
+
+        <p>Похоже, Сол Гудман подчистил все следы этой ссылки.</p>
+
+        <div class="button-group">
+            <a href="https://piggyuppy58.github.io/kino/gilligan.html" class="btn">Вернуться в лабораторию</a>
+            <a href="https://piggyuppy58.github.io/kino/gilligan/bettercallsaul.html" class="btn btn-saul">Позвонить Солу Гудману</a>
+        </div>
+    </div>
+
+    <div class="crystals"></div>
+
+</body>
+</html>
