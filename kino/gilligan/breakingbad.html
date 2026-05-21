@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Во все тяжкие | Все сезоны | Видеоплеер</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0a1f0a 0%, #0b2b0b 100%);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: #f0f3fa;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #5c9e3c, #b8e34b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .header p {
+            color: #b9cf9e;
+            font-size: 0.9rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .player-column {
+            position: sticky;
+            top: 1.5rem;
+        }
+
+        .player-section {
+            background: #0a130a;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+            border: 1px solid rgba(80, 120, 40, 0.4);
+        }
+        .video-wrapper {
+            position: relative;
+            background: #000;
+            width: 100%;
+        }
+        video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            outline: none;
+        }
+        .episode-info {
+            padding: 0.8rem 1.2rem;
+            background: #0f1a0f;
+            border-top: 1px solid #2a3a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .now-playing {
+            font-weight: 600;
+            background: #1e2a12;
+            padding: 0.3rem 0.9rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+        }
+        .now-playing span {
+            color: #b3e34b;
+            margin-right: 6px;
+        }
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .quality-badge {
+            font-size: 0.7rem;
+            background: #2a3a1a;
+            padding: 0.2rem 0.7rem;
+            border-radius: 50px;
+        }
+        .autoplay-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            background: #1e2a12;
+            padding: 0.2rem 0.8rem 0.2rem 1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .autoplay-toggle:hover {
+            background: #2c3e1c;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #3a5530;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 15px;
+            width: 15px;
+            left: 3px;
+            bottom: 2.5px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #b3e34b;
+        }
+        input:checked + .slider:before {
+            transform: translateX(19px);
+        }
+        .toggle-label {
+            font-weight: 500;
+        }
+
+        .playlist-column {
+            background: rgba(12, 22, 10, 0.8);
+            backdrop-filter: blur(4px);
+            border-radius: 24px;
+            border: 1px solid rgba(120, 160, 70, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 120px);
+            position: sticky;
+            top: 1.5rem;
+        }
+        .playlist-header {
+            padding: 1rem 1.2rem;
+            background: #0f1a0f;
+            border-bottom: 1px solid #2a3a1a;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .playlist-scroll {
+            overflow-y: auto;
+            flex: 1;
+            padding: 0.5rem 0.8rem 1rem;
+        }
+        .playlist-season {
+            margin-bottom: 1.2rem;
+        }
+        .playlist-season-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: #2a3e1e;
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            margin: 0.5rem 0 0.6rem 0;
+            letter-spacing: 0.5px;
+        }
+        .playlist-episodes {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .playlist-ep-btn {
+            background: #1a2a12;
+            border: none;
+            color: #eef5e0;
+            padding: 0.6rem 0.8rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .playlist-ep-btn:hover {
+            background: #b3e34b;
+            transform: translateX(3px);
+            color: #0f1a0f;
+        }
+        .playlist-ep-btn.active-ep {
+            background: #b3e34b;
+            box-shadow: 0 0 0 1px #eaff99;
+            font-weight: bold;
+            color: #0a1a0a;
+        }
+        .episode-ru {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .episode-en {
+            font-size: 0.65rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            color: #b3e34b;
+            font-weight: bold;
+            backdrop-filter: blur(6px);
+            z-index: 10;
+            border-radius: 20px;
+            font-size: 1.2rem;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #7e9a5e;
+        }
+        @media (max-width: 860px) {
+            body {
+                padding: 1rem;
+            }
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .player-column {
+                position: relative;
+                top: 0;
+            }
+            .playlist-column {
+                position: relative;
+                top: 0;
+                max-height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🧪 ВО ВСЕ ТЯЖКИЕ (BREAKING BAD)</h1>
+        <p>⚗️ Все 5 сезонов | 1080p | HLS-плеер | Автопереключение серий 🧬</p>
+    </div>
+
+    <div class="main-layout">
+        <div class="player-column">
+            <div class="player-section">
+                <div class="video-wrapper">
+                    <video id="videoPlayer" controls preload="metadata" poster="https://via.placeholder.com/1920x1080/1a2a1a/b3e34b?text=BREAKING+BAD"></video>
+                    <div id="loadingIndicator" class="loading-overlay">🔬 ЗАГРУЗКА ПОТОКА... 🧪</div>
+                </div>
+                <div class="episode-info">
+                    <div class="now-playing"><span>🎬 Сейчас:</span> <span id="currentEpisodeLabel">—</span></div>
+                    <div class="controls-right">
+                        <div class="quality-badge">📺 Full HD / 1080p</div>
+                        <label class="autoplay-toggle">
+                            <span class="toggle-label">⏩ Автоследующая</span>
+                            <div class="switch">
+                                <input type="checkbox" id="autoplayCheckbox">
+                                <span class="slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="playlist-column">
+            <div class="playlist-header">
+                <span>📺 ВСЕ СЕРИИ ПО СЕЗОНАМ</span>
+            </div>
+            <div class="playlist-scroll" id="playlistContainer"></div>
+        </div>
+    </div>
+    <footer>🔥 Автопереключение по порядку: 1 сезон → 2 сезон → 3 сезон → 4 сезон → 5 сезон. Все ссылки HLS.m3u8 | Walter White edition</footer>
+</div>
+
+<script>
+    // ================================================================
+    // ПОЛНЫЙ СПИСОК СЕРИЙ BREAKING BAD (исправлены названия — без дублей "Серия X:")
+    // ================================================================
+    const episodesData = [
+        // ---------- СЕЗОН 1 (7 серий) ----------
+        { season: 1, episode: 1, url: "https://s1.lomont.site/vod/films/breaking_bad.s01e01.dub.bluray.1080p.hevc_339307/hls/index.m3u8", titleRu: "Пилот", titleEn: "Pilot", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 2, url: "https://s1.lomont.site/vod/films/breaking_bad.s01e02.dub.bluray.1080p.hevc_339308/hls/index.m3u8", titleRu: "Кот в мешке", titleEn: "Cat's in the Bag", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 3, url: "https://s1.lomont.site/vod/films/breaking_bad.s01e03.dub.bluray.1080p.hevc_339309/hls/index.m3u8", titleRu: "И этот хрен в морг", titleEn: "...And the Bag's in the River", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 4, url: "https://s1.lomont.site/vod/films/breaking_bad.s01e04.dub.bluray.1080p.hevc_339310/hls/index.m3u8", titleRu: "Раковый больной", titleEn: "Cancer Man", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 5, url: "https://s1.lomont.site/vod/films/breaking_bad.s01e05.dub.bluray.1080p.hevc_339311/hls/index.m3u8", titleRu: "Серое вещество", titleEn: "Gray Matter", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 6, url: "https://s1.lomont.site/vod/films/breaking_bad.s01e06.dub.bluray.1080p.hevc_339312/hls/index.m3u8", titleRu: "Пригоршня ничего", titleEn: "Crazy Handful of Nothin'", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 7, url: "https://s1.lomont.site/vod/films/breaking_bad.s01e07.dub.bluray.1080p.hevc_339313/hls/index.m3u8", titleRu: "Сделка во имя наживы", titleEn: "A No-Rough-Stuff-Type Deal", seasonName: "1 СЕЗОН" },
+
+        // ---------- СЕЗОН 2 (13 серий) ----------
+        { season: 2, episode: 1, url: "https://s8.lomont.site/vod/films/breaking_bad.s02e01.dub.bluray.1080p.hevc_419009/hls/index.m3u8", titleRu: "Семьсот тридцать семь", titleEn: "Seven Thirty-Seven", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 2, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e02.dub.bluray.1080p.hevc_419010/hls/index.m3u8", titleRu: "Поджаренный", titleEn: "Grilled", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 3, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e03.dub.bluray.1080p.hevc_419011/hls/index.m3u8", titleRu: "Укус мёртвой пчелы", titleEn: "Bit by a Dead Bee", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 4, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e04.dub.bluray.1080p.hevc_419012/hls/index.m3u8", titleRu: "На дне", titleEn: "Down", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 5, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e05.dub.bluray.1080p.hevc_419013/hls/index.m3u8", titleRu: "Отсчёт", titleEn: "Breakage", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 6, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e06.dub.bluray.1080p.hevc_419014/hls/index.m3u8", titleRu: "Неудачник", titleEn: "Peekaboo", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 7, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e07.dub.bluray.1080p.hevc_419015/hls/index.m3u8", titleRu: "Чёрный и голубой", titleEn: "Negro y Azul", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 8, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e08.dub.bluray.1080p.hevc_419016/hls/index.m3u8", titleRu: "Лучше звоните Солу", titleEn: "Better Call Saul", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 9, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e09.dub.bluray.1080p.hevc_419017/hls/index.m3u8", titleRu: "4 дня отсутствия", titleEn: "4 Days Out", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 10, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e10.dub.bluray.1080p.hevc_419018/hls/index.m3u8", titleRu: "Конец торгов", titleEn: "Over", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 11, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e11.dub.bluray.1080p.hevc_419019/hls/index.m3u8", titleRu: "Мандала", titleEn: "Mandala", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 12, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e12.dub.bluray.1080p.hevc_419020/hls/index.m3u8", titleRu: "Феникс", titleEn: "Phoenix", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 13, url: "https://s5.lomont.site/vod/films/breaking_bad.s02e13.dub.bluray.1080p.hevc_419021/hls/index.m3u8", titleRu: "ABQ", titleEn: "ABQ", seasonName: "2 СЕЗОН" },
+
+        // ---------- СЕЗОН 3 (13 серий) ----------
+        { season: 3, episode: 1, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e01.dub.bluray.1080p.hevc_339314/hls/index.m3u8", titleRu: "Больше не в том бизнесе", titleEn: "No Más", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 2, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e02.dub.bluray.1080p.hevc_339315/hls/index.m3u8", titleRu: "Безымянный конь", titleEn: "Caballo sin Nombre", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 3, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e03.dub.bluray.1080p.hevc_339316/hls/index.m3u8", titleRu: "I.F.T.", titleEn: "I.F.T.", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 4, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e04.dub.bluray.1080p.hevc_339317/hls/index.m3u8", titleRu: "Зелёный свет", titleEn: "Green Light", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 5, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e05.dub.bluray.1080p.hevc_339318/hls/index.m3u8", titleRu: "Масс", titleEn: "Más", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 6, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e06.dub.bluray.1080p.hevc_339319/hls/index.m3u8", titleRu: "Закат", titleEn: "Sunset", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 7, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e07.dub.bluray.1080p.hevc_339320/hls/index.m3u8", titleRu: "Одна минута", titleEn: "One Minute", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 8, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e08.dub.bluray.1080p.hevc_339321/hls/index.m3u8", titleRu: "Я вижу тебя", titleEn: "I See You", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 9, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e09.dub.bluray.1080p.hevc_339322/hls/index.m3u8", titleRu: "Пора убивать", titleEn: "Kafkaesque", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 10, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e10.dub.bluray.1080p.hevc_339323/hls/index.m3u8", titleRu: "Муха", titleEn: "Fly", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 11, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e11.dub.bluray.1080p.hevc_339324/hls/index.m3u8", titleRu: "Abiquiu", titleEn: "Abiquiu", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 12, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e12.dub.bluray.1080p.hevc_339325/hls/index.m3u8", titleRu: "Полумеры", titleEn: "Half Measures", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 13, url: "https://s1.lomont.site/vod/films/breaking_bad.s03e13.dub.bluray.1080p.hevc_339326/hls/index.m3u8", titleRu: "Полные меры", titleEn: "Full Measure", seasonName: "3 СЕЗОН" },
+
+        // ---------- СЕЗОН 4 (13 серий) ----------
+        { season: 4, episode: 1, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e01.dub.bluray.1080p.hevc_339327/hls/index.m3u8", titleRu: "Ножницы", titleEn: "Box Cutter", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 2, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e02.dub.bluray.1080p.hevc_339328/hls/index.m3u8", titleRu: "Тридцать восемь, ствол", titleEn: "Thirty-Eight Snub", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 3, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e03.dub.bluray.1080p.hevc_339329/hls/index.m3u8", titleRu: "Открытый дом", titleEn: "Open House", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 4, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e04.dub.bluray.1080p.hevc_339330/hls/index.m3u8", titleRu: "Пуля в лицо", titleEn: "Bullet Points", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 5, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e05.dub.bluray.1080p.hevc_339331/hls/index.m3u8", titleRu: "Собачья дичь", titleEn: "Shotgun", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 6, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e06.dub.bluray.1080p.hevc_339332/hls/index.m3u8", titleRu: "Короткая лапа", titleEn: "Cornered", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 7, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e07.dub.bluray.1080p.hevc_339333/hls/index.m3u8", titleRu: "Проблемный пёс", titleEn: "Problem Dog", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 8, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e08.dub.bluray.1080p.hevc_339334/hls/index.m3u8", titleRu: "Братья", titleEn: "Hermanos", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 9, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e09.dub.bluray.1080p.hevc_339335/hls/index.m3u8", titleRu: "Жучок", titleEn: "Bug", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 10, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e10.dub.bluray.1080p.hevc_339336/hls/index.m3u8", titleRu: "Здоровье", titleEn: "Salud", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 11, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e11.dub.bluray.1080p.hevc_339337/hls/index.m3u8", titleRu: "Слепой", titleEn: "Crawl Space", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 12, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e12.dub.bluray.1080p.hevc_339338/hls/index.m3u8", titleRu: "Конечные сроки", titleEn: "End Times", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 13, url: "https://s1.lomont.site/vod/films/breaking_bad.s04e13.dub.bluray.1080p.hevc_339339/hls/index.m3u8", titleRu: "Лицо на все деньги", titleEn: "Face Off", seasonName: "4 СЕЗОН" },
+
+        // ---------- СЕЗОН 5 (16 серий) ----------
+        { season: 5, episode: 1, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e01.dub.bluray.1080p.hevc_339620/hls/index.m3u8", titleRu: "Жить свободным или умереть", titleEn: "Live Free or Die", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 2, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e02.dub.bluray.1080p.hevc_339621/hls/index.m3u8", titleRu: "Мадригал", titleEn: "Madrigal", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 3, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e03.dub.bluray.1080p.hevc_339622/hls/index.m3u8", titleRu: "Опасные условия", titleEn: "Hazard Pay", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 4, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e04.dub.bluray.1080p.hevc_339623/hls/index.m3u8", titleRu: "Пятьдесят один", titleEn: "Fifty-One", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 5, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e05.dub.bluray.1080p.hevc_339624/hls/index.m3u8", titleRu: "Мёртвый груз", titleEn: "Dead Freight", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 6, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e06.dub.bluray.1080p.hevc_339625/hls/index.m3u8", titleRu: "Покупай по-крупному", titleEn: "Buyout", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 7, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e07.dub.bluray.1080p.hevc_339626/hls/index.m3u8", titleRu: "Скажи моему имени", titleEn: "Say My Name", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 8, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e08.dub.bluray.1080p.hevc_339627/hls/index.m3u8", titleRu: "Лети", titleEn: "Gliding Over All", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 9, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e09.dub.bluray.1080p.hevc_339628/hls/index.m3u8", titleRu: "Кровавые деньги", titleEn: "Blood Money", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 10, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e10.dub.bluray.1080p.hevc_339629/hls/index.m3u8", titleRu: "Погребённый", titleEn: "Buried", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 11, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e11.dub.bluray.1080p.hevc_339630/hls/index.m3u8", titleRu: "Конфиденциальные материалы", titleEn: "Confessions", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 12, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e12.dub.bluray.1080p.hevc_339631/hls/index.m3u8", titleRu: "Шершень", titleEn: "Rabid Dog", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 13, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e13.dub.bluray.1080p.hevc_339632/hls/index.m3u8", titleRu: "Тохаджилли", titleEn: "To'hajiilee", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 14, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e14.dub.bluray.1080p.hevc_339633/hls/index.m3u8", titleRu: "Озимандия", titleEn: "Ozymandias", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 15, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e15.dub.bluray.1080p.hevc_339634/hls/index.m3u8", titleRu: "Денежный поезд", titleEn: "Granite State", seasonName: "5 СЕЗОН" },
+        { season: 5, episode: 16, url: "https://s1.lomont.site/vod/films/breaking_bad.s05e16.dub.bluray.1080p.hevc_339635/hls/index.m3u8", titleRu: "Фелина", titleEn: "Felina", seasonName: "5 СЕЗОН" }
+    ];
+
+    // DOM элементы
+    const video = document.getElementById('videoPlayer');
+    const currentLabelSpan = document.getElementById('currentEpisodeLabel');
+    const playlistContainer = document.getElementById('playlistContainer');
+    const loadingDiv = document.getElementById('loadingIndicator');
+    const autoplayCheckbox = document.getElementById('autoplayCheckbox');
+
+    let hls = null;
+    let currentActiveBtn = null;
+    let currentEpisodeIndex = null;
+    let autoplayEnabled = false;
+
+    function loadEpisode(episode, btnElement) {
+        if (!episode || !episode.url) {
+            currentLabelSpan.innerText = `❌ Ошибка: ссылка не найдена`;
+            loadingDiv.style.display = 'none';
+            return;
+        }
+        loadingDiv.style.display = 'flex';
+        
+        if (hls) {
+            hls.destroy();
+            hls = null;
+        }
+        
+        if (currentActiveBtn) {
+            currentActiveBtn.classList.remove('active-ep');
+        }
+        if (btnElement) {
+            btnElement.classList.add('active-ep');
+            currentActiveBtn = btnElement;
+        }
+        
+        const foundIndex = episodesData.findIndex(e => e.url === episode.url);
+        if (foundIndex !== -1) currentEpisodeIndex = foundIndex;
+        
+        // Исправленный вывод: без дубля "серия 1 — Серия 1: ..."
+        let displayText = `${episode.seasonName} • ${episode.episode} серия — ${episode.titleRu}`;
+        currentLabelSpan.innerText = displayText;
+        
+        const url = episode.url;
+        
+        if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = url;
+            const onLoaded = () => {
+                loadingDiv.style.display = 'none';
+                video.play().catch(e => console.warn("autoplay blocked", e));
+                video.removeEventListener('loadedmetadata', onLoaded);
+            };
+            video.addEventListener('loadedmetadata', onLoaded, { once: true });
+            video.addEventListener('error', () => {
+                loadingDiv.style.display = 'none';
+                currentLabelSpan.innerText = `${displayText} (ошибка воспроизведения)`;
+            }, { once: true });
+            video.load();
+        } else if (Hls.isSupported()) {
+            hls = new Hls({ debug: false, enableWorker: true, lowLatencyMode: false });
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                loadingDiv.style.display = 'none';
+                video.play().catch(e => console.log("autoplay заблокирован", e));
+            });
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    console.error("Fatal HLS error", data);
+                    loadingDiv.style.display = 'none';
+                    currentLabelSpan.innerText = `${displayText} (ошибка потока)`;
+                    if (hls) hls.destroy();
+                } else {
+                    loadingDiv.style.display = 'none';
+                }
+            });
+        } else {
+            loadingDiv.style.display = 'none';
+            alert("Ваш браузер не поддерживает HLS-потоки.");
+            currentLabelSpan.innerText = `${displayText} (не поддерживается)`;
+        }
+        
+        setTimeout(() => {
+            if (loadingDiv.style.display === 'flex') {
+                loadingDiv.style.display = 'none';
+                if (currentLabelSpan.innerText.includes(episode.titleRu))
+                    currentLabelSpan.innerText = `${displayText} (долгая загрузка)`;
+            }
+        }, 12000);
+    }
+
+    function playNextEpisode() {
+        if (!autoplayEnabled) return;
+        if (currentEpisodeIndex === null) return;
+        const nextIndex = currentEpisodeIndex + 1;
+        if (nextIndex >= episodesData.length) {
+            console.log("Конец всех сезонов Breaking Bad.");
+            return;
+        }
+        const nextEpisode = episodesData[nextIndex];
+        const nextButton = document.querySelector(`.playlist-ep-btn[data-idx="${nextIndex}"]`);
+        if (nextButton) {
+            loadEpisode(nextEpisode, nextButton);
+        } else {
+            loadEpisode(nextEpisode, null);
+        }
+    }
+    
+    video.addEventListener('ended', () => { playNextEpisode(); });
+    autoplayCheckbox.addEventListener('change', (e) => { autoplayEnabled = e.target.checked; });
+
+    function buildPlaylist() {
+        const groups = new Map();
+        episodesData.forEach((ep, idx) => {
+            const key = ep.seasonName;
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push({ ...ep, originalIndex: idx });
+        });
+        
+        const order = ["1 СЕЗОН", "2 СЕЗОН", "3 СЕЗОН", "4 СЕЗОН", "5 СЕЗОН"];
+        
+        for (let seasonName of order) {
+            const eps = groups.get(seasonName);
+            if (!eps) continue;
+            const seasonDiv = document.createElement('div');
+            seasonDiv.className = `playlist-season`;
+            seasonDiv.innerHTML = `<div class="playlist-season-title">${seasonName}</div><div class="playlist-episodes" id="playlist-season-${seasonName.replace(/\s/g, '')}"></div>`;
+            playlistContainer.appendChild(seasonDiv);
+            const episodesContainer = seasonDiv.querySelector('.playlist-episodes');
+            
+            eps.forEach(ep => {
+                const btn = document.createElement('button');
+                btn.className = 'playlist-ep-btn';
+                btn.setAttribute('data-season', ep.season);
+                btn.setAttribute('data-episode', ep.episode);
+                btn.setAttribute('data-idx', ep.originalIndex);
+                // В плейлисте тоже убрали дубль: "1 серия — Пилот"
+                const title = `${ep.episode} серия — ${ep.titleRu}`;
+                btn.innerHTML = `<div class="episode-ru">${title}</div><div class="episode-en">${ep.titleEn}</div>`;
+                btn.addEventListener('click', () => loadEpisode(ep, btn));
+                episodesContainer.appendChild(btn);
+            });
+        }
+        
+        if (episodesData.length) {
+            const firstEp = episodesData[0];
+            const firstBtn = document.querySelector(`.playlist-ep-btn[data-idx="0"]`);
+            if (firstBtn) loadEpisode(firstEp, firstBtn);
+            else loadEpisode(firstEp, null);
+        }
+    }
+    
+    buildPlaylist();
+    
+    video.addEventListener('error', () => { loadingDiv.style.display = 'none'; });
+    video.addEventListener('playing', () => { loadingDiv.style.display = 'none'; });
+    video.addEventListener('waiting', () => { if (!video.paused) loadingDiv.style.display = 'flex'; });
+    video.addEventListener('canplay', () => { loadingDiv.style.display = 'none'; });
+    video.addEventListener('stalled', () => { loadingDiv.style.display = 'flex'; });
+</script>
+</body>
+</html>

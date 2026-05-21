@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Better Call Saul | Все сезоны и серии</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0b0a0c 0%, #14121a 100%);
+            font-family: 'Segoe UI', 'Roboto', 'Georgia', serif;
+            color: #ede7d9;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.6rem;
+            background: linear-gradient(135deg, #c49a2b, #e6bc5e, #a5711c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            font-weight: 700;
+        }
+        .header p {
+            color: #b8aa8c;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .player-column {
+            position: sticky;
+            top: 1.5rem;
+        }
+
+        .player-section {
+            background: #0f0d14;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(210, 180, 110, 0.2);
+            border: 1px solid rgba(210, 175, 85, 0.3);
+        }
+        .video-wrapper {
+            position: relative;
+            background: #000;
+            width: 100%;
+        }
+        video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 9;
+            background-color: #030205;
+            outline: none;
+        }
+        .episode-info {
+            padding: 0.8rem 1.3rem;
+            background: #13101b;
+            border-top: 1px solid #2e2a2e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .now-playing {
+            font-weight: 600;
+            background: #211d2c;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            letter-spacing: 0.3px;
+        }
+        .now-playing span {
+            color: #e6b13e;
+            margin-right: 8px;
+        }
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .quality-badge {
+            font-size: 0.7rem;
+            background: #26222f;
+            padding: 0.2rem 0.7rem;
+            border-radius: 50px;
+            font-weight: 500;
+            color: #e6c384;
+        }
+        .autoplay-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            background: #1e1b28;
+            padding: 0.2rem 0.8rem 0.2rem 1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .autoplay-toggle:hover {
+            background: #2e2a3a;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #3a3550;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 15px;
+            width: 15px;
+            left: 3px;
+            bottom: 2.5px;
+            background-color: #f5e2b0;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #c9972e;
+        }
+        input:checked + .slider:before {
+            transform: translateX(19px);
+        }
+        .toggle-label {
+            font-weight: 500;
+        }
+
+        .playlist-column {
+            background: rgba(15, 13, 22, 0.8);
+            backdrop-filter: blur(6px);
+            border-radius: 28px;
+            border: 1px solid rgba(210, 175, 85, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 120px);
+            position: sticky;
+            top: 1.5rem;
+        }
+        .playlist-header {
+            padding: 1rem 1.3rem;
+            background: #13101b;
+            border-bottom: 1px solid #2e2a2e;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e6bc6c;
+        }
+        .playlist-scroll {
+            overflow-y: auto;
+            flex: 1;
+            padding: 0.6rem 0.8rem 1rem;
+        }
+        .playlist-season {
+            margin-bottom: 1.3rem;
+        }
+        .playlist-season-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: #2a2538;
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            margin: 0.3rem 0 0.7rem 0;
+            letter-spacing: 0.8px;
+            border-left: 3px solid #e6b13e;
+        }
+        .playlist-episodes {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .playlist-ep-btn {
+            background: #1d1929;
+            border: none;
+            color: #ece3d4;
+            padding: 0.7rem 0.9rem;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-left: 2px solid transparent;
+        }
+        .playlist-ep-btn:hover {
+            background: #c9972e;
+            transform: translateX(4px);
+            color: #0f0c14;
+            border-left-color: #ffdf8c;
+        }
+        .playlist-ep-btn.active-ep {
+            background: linear-gradient(95deg, #c28a2a, #e6b13e);
+            box-shadow: 0 0 0 1px #ffdd99;
+            font-weight: bold;
+            color: #0a0812;
+        }
+        .episode-ru {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .episode-en {
+            font-size: 0.65rem;
+            opacity: 0.75;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            font-family: monospace;
+        }
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            color: #ffdd99;
+            font-weight: bold;
+            backdrop-filter: blur(6px);
+            z-index: 10;
+            border-radius: 20px;
+            font-size: 1rem;
+            gap: 10px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #7e6f55;
+            border-top: 1px solid #2a2538;
+            padding-top: 1.2rem;
+        }
+        @media (max-width: 860px) {
+            body {
+                padding: 1rem;
+            }
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .player-column {
+                position: relative;
+                top: 0;
+            }
+            .playlist-column {
+                position: relative;
+                top: 0;
+                max-height: 480px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>⚖️ BETTER CALL SAUL ⚖️</h1>
+        <p>🎬 Полная коллекция сезонов 1–6 | HLS 1080p | Автопродолжение</p>
+    </div>
+
+    <div class="main-layout">
+        <div class="player-column">
+            <div class="player-section">
+                <div class="video-wrapper">
+                    <video id="videoPlayer" controls preload="metadata" poster="https://i.postimg.cc/3rWvqKkL/bcs-poster.png" onerror="this.onerror=null;this.poster='https://via.placeholder.com/1920x1080/1e1a2b/c49a2b?text=Better+Call+Saul'"></video>
+                    <div id="loadingIndicator" class="loading-overlay">🎞️ ЗАГРУЗКА СЕРИИ ...</div>
+                </div>
+                <div class="episode-info">
+                    <div class="now-playing"><span>📀 СЕЙЧАС:</span> <span id="currentEpisodeLabel">—</span></div>
+                    <div class="controls-right">
+                        <div class="quality-badge">🎥 Full HD / HLS</div>
+                        <label class="autoplay-toggle">
+                            <span class="toggle-label">⏩ Автоследующая</span>
+                            <div class="switch">
+                                <input type="checkbox" id="autoplayCheckbox" checked>
+                                <span class="slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="playlist-column">
+            <div class="playlist-header">
+                <span>📼 ОГЛАВЛЕНИЕ СЕРИЙ (РУССКИЕ НАЗВАНИЯ)</span>
+            </div>
+            <div class="playlist-scroll" id="playlistContainer"></div>
+        </div>
+    </div>
+    <footer>🔥 Автоматическое переключение серий по порядку (Сезон 1 → 2 → 3 → 4 → 5 → 6).</footer>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // 1. СПИСОК ВСЕХ ССЫЛОК (m3u8) ПО СЕЗОНАМ 
+    // --------------------------------------------------------------
+    const seasonUrls = {
+        1: [
+            "https://s5.lomont.site/vod/films/me.bcs.s01e01.tvshows_627138/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s01e02.tvshows_627139/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s01e03.tvshows_627140/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s01e04.tvshows_627141/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s01e05.tvshows_627142/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s01e06.tvshows_627143/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s01e07.tvshows_627144/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s01e08.tvshows_627145/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s01e09.tvshows_627146/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s01e10.tvshows_627147/hls/index.m3u8"
+        ],
+        2: [
+            "https://s5.lomont.site/vod/films/me.bcs.s02e01.tvshows_627696/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s02e02.tvshows_627697/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s02e03.tvshows_627698/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s02e04.tvshows_627699/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s02e05.tvshows_627700/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s02e06.tvshows_627701/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s02e07.tvshows_627702/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s02e08.tvshows_627703/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s02e09.tvshows_627704/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s02e10.tvshows_627705/hls/index.m3u8"
+        ],
+        3: [
+            "https://s5.lomont.site/vod/films/me.bcs.s03e01.tvshows_627706/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s03e02.tvshows_627707/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s03e03.tvshows_627708/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s03e04.tvshows_627709/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s03e05.tvshows_627710/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s03e06.tvshows_627711/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s03e07.tvshows_627712/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s03e08.tvshows_627713/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s03e09.tvshows_627714/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s03e10.tvshows_627715/hls/index.m3u8"
+        ],
+        4: [
+            "https://s5.lomont.site/vod/films/me.bcs.s04e01.tvshows_627716/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s04e02.tvshows_627717/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s04e03.tvshows_627718/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s04e04.tvshows_627719/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s04e05.tvshows_627720/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s04e06.tvshows_627721/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s04e07.tvshows_627722/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s04e08.tvshows_627723/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s04e09.tvshows_627724/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s04e10.tvshows_627725/hls/index.m3u8"
+        ],
+        5: [
+            "https://s5.lomont.site/vod/films/me.bcs.s05e01.tvshows_627726/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s05e02.tvshows_627727/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s05e03.tvshows_627728/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s05e04.tvshows_627729/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s05e05.tvshows_627730/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s05e06.tvshows_627731/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s05e07.tvshows_627732/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s05e08.tvshows_627733/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s05e09.tvshows_627734/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s05e10.tvshows_627735/hls/index.m3u8"
+        ],
+        6: [
+            "https://s5.lomont.site/vod/films/me.bcs.s06e01.tvshows_627736/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e02.tvshows_627737/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e03.tvshows_627738/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e04.tvshows_627739/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e05.tvshows_627740/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e06.tvshows_627741/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e07.tvshows_627742/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e08.tvshows_627743/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e09.tvshows_627744/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e10.tvshows_627745/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e11.tvshows_627746/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e12.tvshows_627747/hls/index.m3u8",
+            "https://s5.lomont.site/vod/films/me.bcs.s06e13.tvshows_627748/hls/index.m3u8"
+        ]
+    };
+
+    // РУССКИЕ НАЗВАНИЯ СЕРИЙ (в точности как в таблице)
+    const russianTitles = {
+        1: ["Уно", "Михо", "Начо", "Герой", "Альпийский пастушок", "Легавые", "Бинго", "РИКО", "Пименто", "Марко"],
+        2: ["Выключатель", "Пирог", "Амарилло", "Без перчаток", "Ребекка", "Бали Хай", "Надувной", "Фифи", "Пригвождённый", "Клик"],
+        3: ["Мейбл", "Свидетель", "Невозвратные издержки", "Вкуснятина", "Плутовство", "Вне бренда", "Расходы", "Падение", "Обрыв", "Фонарь"],
+        4: ["Дым", "Вздох", "Что-то прекрасное", "Говорить", "Ничего себе поездочка", "Пиньята", "Что-то глупое", "Коасати", "До свидания", "Победитель"],
+        5: ["Волшебник", "Скидка 50%", "Парень для этого", "Намасте", "Посвящается Максу", "Уэкслер против Гудмана", "ДММ", "Коммивояжёр", "Дорога плохих выборов", "Что-то непростительное"],
+        6: ["Вино и розы", "Кнут и пряник", "Молот и наковальня", "Бей и беги", "Чёрный и синий", "Точило и зуб", "План и исполнение", "Направь и стреляй", "Веселье и игры", "Снежок", "Во все тяжкие", "Водоснабжение", "Всё кончено"]
+    };
+
+    // Английские названия (для подписи снизу в плейлисте)
+    const englishTitles = {
+        1: ["Uno", "Mijo", "Nacho", "Hero", "Alpine Shepherd Boy", "Five-O", "Bingo", "RICO", "Pimento", "Marco"],
+        2: ["Switch", "Cobbler", "Amarillo", "Gloves Off", "Rebecca", "Bali Ha'i", "Inflatable", "Fifi", "Nailed", "Klick"],
+        3: ["Mabel", "Witness", "Sunk Costs", "Sabrosito", "Chicanery", "Off Brand", "Expenses", "Slip", "Fall", "Lantern"],
+        4: ["Smoke", "Breathe", "Something Beautiful", "Talk", "Quite a Ride", "Piñata", "Something Stupid", "Coushatta", "Wiedersehen", "Winner"],
+        5: ["Magic Man", "50% Off", "The Guy For This", "Namaste", "Dedicado a Max", "Wexler v. Goodman", "JMM", "Bagman", "Bad Choice Road", "Something Unforgivable"],
+        6: ["Wine and Roses", "Carrot and Stick", "Rock and Hard Place", "Hit and Run", "Black and Blue", "Axe and Grind", "Plan and Execution", "Point and Shoot", "Fun and Games", "Nippy", "Breaking Bad", "Waterworks", "Saul Gone"]
+    };
+
+    // Формируем единый массив episodesData с русскими titleRu
+    let episodesData = [];
+    let globalId = 0;
+
+    for (let season = 1; season <= 6; season++) {
+        const urls = seasonUrls[season];
+        const ruNames = russianTitles[season];
+        const enNames = englishTitles[season];
+        if (!urls || !ruNames) continue;
+        for (let epIdx = 0; epIdx < urls.length; epIdx++) {
+            const episodeNumber = epIdx + 1;
+            const russianName = ruNames[epIdx];
+            const englishName = enNames[epIdx];
+            episodesData.push({
+                id: globalId++,
+                season: season,
+                episode: episodeNumber,
+                url: urls[epIdx],
+                titleRu: `${episodeNumber} серия — ${russianName}`,   // например "1 серия — Уно"
+                titleEn: englishName,
+                seasonName: `СЕЗОН ${season}`,
+                shortRu: russianName   // для дополнительного удобства
+            });
+        }
+    }
+
+    // DOM элементы
+    const video = document.getElementById('videoPlayer');
+    const currentLabelSpan = document.getElementById('currentEpisodeLabel');
+    const playlistContainer = document.getElementById('playlistContainer');
+    const loadingDiv = document.getElementById('loadingIndicator');
+    const autoplayCheckbox = document.getElementById('autoplayCheckbox');
+
+    let hls = null;
+    let currentActiveBtn = null;
+    let currentEpisodeId = null;
+    let autoplayEnabled = true;
+
+    autoplayCheckbox.checked = true;
+
+    function loadEpisode(episode, btnElement) {
+        if (!episode || !episode.url) {
+            currentLabelSpan.innerText = `⚠️ Ошибка: ссылка на серию отсутствует`;
+            loadingDiv.style.display = 'none';
+            return;
+        }
+        loadingDiv.style.display = 'flex';
+        
+        if (hls) {
+            hls.destroy();
+            hls = null;
+        }
+        
+        if (currentActiveBtn) {
+            currentActiveBtn.classList.remove('active-ep');
+        }
+        if (btnElement) {
+            btnElement.classList.add('active-ep');
+            currentActiveBtn = btnElement;
+        }
+        
+        currentEpisodeId = episode.id;
+        let displayText = `${episode.seasonName} • ${episode.titleRu}`;
+        currentLabelSpan.innerText = displayText;
+        
+        const streamUrl = episode.url;
+        
+        if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = streamUrl;
+            const onLoaded = () => {
+                loadingDiv.style.display = 'none';
+                video.play().catch(e => console.log("autoplay blocked", e));
+                video.removeEventListener('loadedmetadata', onLoaded);
+            };
+            video.addEventListener('loadedmetadata', onLoaded, { once: true });
+            video.addEventListener('error', () => {
+                loadingDiv.style.display = 'none';
+                currentLabelSpan.innerText = `${displayText} (ошибка воспроизведения)`;
+            }, { once: true });
+            video.load();
+        } else if (Hls.isSupported()) {
+            hls = new Hls({ debug: false, enableWorker: true, lowLatencyMode: false });
+            hls.loadSource(streamUrl);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                loadingDiv.style.display = 'none';
+                video.play().catch(e => console.log("autoplay заблокирован", e));
+            });
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    console.error("Fatal HLS error", data);
+                    loadingDiv.style.display = 'none';
+                    currentLabelSpan.innerText = `${displayText} (ошибка потока)`;
+                    if (hls) hls.destroy();
+                } else {
+                    loadingDiv.style.display = 'none';
+                }
+            });
+        } else {
+            loadingDiv.style.display = 'none';
+            alert("Ваш браузер не поддерживает HLS-потоки.");
+            currentLabelSpan.innerText = `${displayText} (не поддерживается)`;
+        }
+        
+        setTimeout(() => {
+            if (loadingDiv.style.display === 'flex') {
+                loadingDiv.style.display = 'none';
+                if (currentLabelSpan.innerText.includes(episode.titleRu))
+                    currentLabelSpan.innerText = `${displayText} (долгая загрузка)`;
+            }
+        }, 12000);
+    }
+    
+    function playNextEpisode() {
+        if (!autoplayEnabled) return;
+        if (currentEpisodeId === null) return;
+        const nextIndex = currentEpisodeId + 1;
+        if (nextIndex >= episodesData.length) {
+            console.log("🏁 Конец всех серий. Спасибо за просмотр!");
+            return;
+        }
+        const nextEpisode = episodesData[nextIndex];
+        const nextButton = document.querySelector(`.playlist-ep-btn[data-idx="${nextEpisode.id}"]`);
+        if (nextButton) {
+            loadEpisode(nextEpisode, nextButton);
+        } else {
+            loadEpisode(nextEpisode, null);
+        }
+    }
+    
+    video.addEventListener('ended', () => { playNextEpisode(); });
+    autoplayCheckbox.addEventListener('change', (e) => { autoplayEnabled = e.target.checked; });
+    
+    function buildPlaylist() {
+        const groups = new Map();
+        episodesData.forEach(ep => {
+            const key = ep.seasonName;
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(ep);
+        });
+        
+        const seasonOrder = ["СЕЗОН 1", "СЕЗОН 2", "СЕЗОН 3", "СЕЗОН 4", "СЕЗОН 5", "СЕЗОН 6"];
+        
+        for (let seasonLabel of seasonOrder) {
+            const episodesInSeason = groups.get(seasonLabel);
+            if (!episodesInSeason || episodesInSeason.length === 0) continue;
+            
+            const seasonDiv = document.createElement('div');
+            seasonDiv.className = 'playlist-season';
+            seasonDiv.innerHTML = `<div class="playlist-season-title">📀 ${seasonLabel}</div><div class="playlist-episodes" id="season-${seasonLabel.replace(/\s/g, '')}"></div>`;
+            playlistContainer.appendChild(seasonDiv);
+            const episodesContainer = seasonDiv.querySelector('.playlist-episodes');
+            
+            episodesInSeason.forEach(ep => {
+                const btn = document.createElement('button');
+                btn.className = 'playlist-ep-btn';
+                btn.setAttribute('data-season', ep.season);
+                btn.setAttribute('data-episode', ep.episode);
+                btn.setAttribute('data-idx', ep.id);
+                // отображаем русское название и английское (маленькое)
+                btn.innerHTML = `
+                    <div class="episode-ru">🎬 ${ep.titleRu}</div>
+                    <div class="episode-en">${ep.titleEn}</div>
+                `;
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    loadEpisode(ep, btn);
+                });
+                episodesContainer.appendChild(btn);
+            });
+        }
+        
+        if (episodesData.length > 0) {
+            const firstEpisode = episodesData[0];
+            const firstBtn = document.querySelector(`.playlist-ep-btn[data-idx="0"]`);
+            if (firstBtn) {
+                loadEpisode(firstEpisode, firstBtn);
+            } else {
+                loadEpisode(firstEpisode, null);
+            }
+        }
+    }
+    
+    video.addEventListener('error', () => { loadingDiv.style.display = 'none'; });
+    video.addEventListener('playing', () => { loadingDiv.style.display = 'none'; });
+    video.addEventListener('waiting', () => { if (!video.paused) loadingDiv.style.display = 'flex'; });
+    video.addEventListener('canplay', () => { loadingDiv.style.display = 'none'; });
+    video.addEventListener('stalled', () => { loadingDiv.style.display = 'flex'; });
+    
+    buildPlaylist();
+</script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>The Boys | Все сезоны + трейлеры | Плеер</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0a0c12 0%, #12151e 100%);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: #f0f3fa;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #e6a017, #ffcc44);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+        .header p {
+            color: #a0a9c0;
+            font-size: 0.9rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .player-column {
+            position: sticky;
+            top: 1.5rem;
+        }
+
+        .player-section {
+            background: #0b0e16;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .video-wrapper {
+            position: relative;
+            background: #000;
+            width: 100%;
+        }
+        video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            outline: none;
+        }
+        .episode-info {
+            padding: 0.8rem 1.2rem;
+            background: #0f121c;
+            border-top: 1px solid #232837;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .now-playing {
+            font-weight: 600;
+            background: #1e243b;
+            padding: 0.3rem 0.9rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+        }
+        .now-playing span {
+            color: #ffaa33;
+            margin-right: 6px;
+        }
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .quality-badge {
+            font-size: 0.7rem;
+            background: #2a2f44;
+            padding: 0.2rem 0.7rem;
+            border-radius: 50px;
+        }
+        .autoplay-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            background: #1a1e2f;
+            padding: 0.2rem 0.8rem 0.2rem 1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .autoplay-toggle:hover {
+            background: #2a2f44;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #3a3f5e;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 15px;
+            width: 15px;
+            left: 3px;
+            bottom: 2.5px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #e6a017;
+        }
+        input:checked + .slider:before {
+            transform: translateX(19px);
+        }
+        .toggle-label {
+            font-weight: 500;
+        }
+
+        .playlist-column {
+            background: rgba(18, 22, 32, 0.6);
+            backdrop-filter: blur(4px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 120px);
+            position: sticky;
+            top: 1.5rem;
+        }
+        .playlist-header {
+            padding: 1rem 1.2rem;
+            background: #0f121c;
+            border-bottom: 1px solid #232837;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .playlist-scroll {
+            overflow-y: auto;
+            flex: 1;
+            padding: 0.5rem 0.8rem 1rem;
+        }
+        .playlist-season {
+            margin-bottom: 1.2rem;
+        }
+        .playlist-season-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: #1e243b;
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            margin: 0.5rem 0 0.6rem 0;
+            letter-spacing: 0.5px;
+        }
+        .playlist-episodes {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .playlist-ep-btn {
+            background: #1b1f30;
+            border: none;
+            color: #eef3ff;
+            padding: 0.6rem 0.8rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .playlist-ep-btn:hover {
+            background: #e6a017;
+            transform: translateX(3px);
+            color: #0f121c;
+        }
+        .playlist-ep-btn.active-ep {
+            background: #e6a017;
+            box-shadow: 0 0 0 1px #ffd966;
+            font-weight: bold;
+            color: #0f121c;
+        }
+        .episode-ru {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .episode-en {
+            font-size: 0.65rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            backdrop-filter: blur(6px);
+            z-index: 10;
+            border-radius: 20px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #5a637c;
+        }
+        @media (max-width: 860px) {
+            body {
+                padding: 1rem;
+            }
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .player-column {
+                position: relative;
+                top: 0;
+            }
+            .playlist-column {
+                position: relative;
+                top: 0;
+                max-height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>THE BOYS: ВСЕ СЕЗОНЫ</h1>
+        <p>💥 Пацаны — 1–4 сезоны, бонусный эпизод, трейлеры 5 сезона | 1080p | Автопереключение 🦸‍♂️🩸</p>
+    </div>
+
+    <div class="main-layout">
+        <div class="player-column">
+            <div class="player-section">
+                <div class="video-wrapper">
+                    <video id="videoPlayer" controls preload="metadata" poster="https://via.placeholder.com/1920x1080/1a1f2e/ffaa33?text=THE+BOYS"></video>
+                    <div id="loadingIndicator" class="loading-overlay">⚡ ЗАГРУЗКА ПОТОКА...</div>
+                </div>
+                <div class="episode-info">
+                    <div class="now-playing"><span>🎬 Сейчас:</span> <span id="currentEpisodeLabel">—</span></div>
+                    <div class="controls-right">
+                        <div class="quality-badge">📺 Full HD / 1080p</div>
+                        <label class="autoplay-toggle">
+                            <span class="toggle-label">⏩ Автоследующая</span>
+                            <div class="switch">
+                                <input type="checkbox" id="autoplayCheckbox">
+                                <span class="slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="playlist-column">
+            <div class="playlist-header">
+                <span>📺 СЕРИИ И ТРЕЙЛЕРЫ</span>
+            </div>
+            <div class="playlist-scroll" id="playlistContainer"></div>
+        </div>
+    </div>
+    <footer>🔥 Автопереключение по порядку: 1 сезон → спецвыпуск → 2 сезон → 3 сезон → 4 сезон → трейлеры 5 сезона.</footer>
+</div>
+
+<script>
+    // ================================================================
+    // ПОЛНЫЙ СПИСОК ВСЕХ ЭПИЗОДОВ THE BOYS + ТРЕЙЛЕРЫ
+    // titleRu — русское название, titleEn — английское название
+    // ================================================================
+    const episodesData = [
+        // ========== СЕЗОН 1 ==========
+        { season: 1, episode: 1, url: "https://s5.lomont.site/content/stream/films/the.boys.s01e01.the.name.of.the.game_620837/hls/1080/index.m3u8", titleRu: "Название игры", titleEn: "The Name of the Game", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 2, url: "https://s5.lomont.site/content/stream/films/the.boys.s01e02.cherry_620838/hls/1080/index.m3u8", titleRu: "Вишенка", titleEn: "Cherry", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 3, url: "https://s5.lomont.site/content/stream/films/the.boys.s01e03.get.some_620839/hls/1080/index.m3u8", titleRu: "Наберись", titleEn: "Get Some", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 4, url: "https://s5.lomont.site/content/stream/films/the.boys.s01e04.the.female.of.the.species_620840/hls/1080/index.m3u8", titleRu: "Особь женского пола", titleEn: "The Female of the Species", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 5, url: "https://s5.lomont.site/content/stream/films/the.boys.s01e05.good.for.the.soul_620841/hls/1080/index.m3u8", titleRu: "Благо для души", titleEn: "Good for the Soul", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 6, url: "https://s5.lomont.site/content/stream/films/the.boys.s01e06.the.innocents_620842/hls/1080/index.m3u8", titleRu: "Невинные", titleEn: "The Innocents", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 7, url: "https://s5.lomont.site/content/stream/films/the.boys.s01e07.the.selfpreservation.society_620843/hls/1080/index.m3u8", titleRu: "Общество самосохранения", titleEn: "The Self-Preservation Society", seasonName: "1 СЕЗОН" },
+        { season: 1, episode: 8, url: "https://s5.lomont.site/content/stream/films/the.boys.s01e08.you.found.me_620844/hls/1080/index.m3u8", titleRu: "Ты нашёл меня", titleEn: "You Found Me", seasonName: "1 СЕЗОН" },
+
+        // ========== СПЕЦВЫПУСК "МЯСНИК" (2 сезон, эпизод 0) ==========
+        { season: 2, episode: 0, url: "https://s8.lomont.site/content/stream/films/theboys.s02e00_557329/hls/1080/index.m3u8", titleRu: "Мясник: Взгляд внутрь", titleEn: "Butcher: A Inside Look", seasonName: "СПЕЦВЫПУСК" },
+
+        // ========== СЕЗОН 2 ==========
+        { season: 2, episode: 1, url: "https://s5.lomont.site/content/stream/films/boys.s02e01_621441/hls/1080/index.m3u8", titleRu: "Большая поездка", titleEn: "The Big Ride", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 2, url: "https://s5.lomont.site/content/stream/films/boys.s02e02_621442/hls/1080/index.m3u8", titleRu: "Тщательная подготовка и планирование", titleEn: "Proper Preparation and Planning", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 3, url: "https://s5.lomont.site/content/stream/films/boys.s02e03_621443/hls/1080/index.m3u8", titleRu: "За холмом с мечами тысячи мужчин", titleEn: "Over the Hill with the Swords of a Thousand Men", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 4, url: "https://s5.lomont.site/content/stream/films/boys.s02e04_621444/hls/1080/index.m3u8", titleRu: "Ничего подобного в мире", titleEn: "Nothing Like It in the World", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 5, url: "https://s5.lomont.site/content/stream/films/boys.s02e05_621445/hls/1080/index.m3u8", titleRu: "Мы должны идти сейчас", titleEn: "We Gotta Go Now", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 6, url: "https://s5.lomont.site/content/stream/films/boys.s02e06_621446/hls/1080/index.m3u8", titleRu: "Кровавые двери прочь", titleEn: "The Bloody Doors Off", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 7, url: "https://s5.lomont.site/content/stream/films/boys.s02e07_621447/hls/1080/index.m3u8", titleRu: "Мясник, пекарь, подсвечник", titleEn: "Butcher, Baker, Candlestick Maker", seasonName: "2 СЕЗОН" },
+        { season: 2, episode: 8, url: "https://s5.lomont.site/content/stream/films/boys.s02e08_621448/hls/1080/index.m3u8", titleRu: "Что я знаю", titleEn: "What I Know", seasonName: "2 СЕЗОН" },
+
+        // ========== СЕЗОН 3 ==========
+        { season: 3, episode: 1, url: "https://s5.lomont.site/content/stream/films/boys.s03e01_621449/hls/1080/index.m3u8", titleRu: "Расплата", titleEn: "Payback", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 2, url: "https://s5.lomont.site/content/stream/films/boys.s03e02_621450/hls/1080/index.m3u8", titleRu: "Единственный мужчина в небе", titleEn: "The Only Man in the Sky", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 3, url: "https://s5.lomont.site/content/stream/films/boys.s03e03_621451/hls/1080/index.m3u8", titleRu: "Барбари-Кост", titleEn: "Barbary Coast", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 4, url: "https://s5.lomont.site/content/stream/films/boys.s03e04_621452/hls/1080/index.m3u8", titleRu: "Славный пятилетний план", titleEn: "Glorious Five Year Plan", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 5, url: "https://s5.lomont.site/content/stream/films/boys.s03e05_621453/hls/1080/index.m3u8", titleRu: "Последний раз взглянуть на этот мир лжи", titleEn: "The Last Time to Look on This World of Lies", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 6, url: "https://s5.lomont.site/content/stream/films/boys.s03e06_621454/hls/1080/index.m3u8", titleRu: "Герогазм", titleEn: "Herogasm", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 7, url: "https://s5.lomont.site/content/stream/films/boys.s03e07_621455/hls/1080/index.m3u8", titleRu: "Вот идёт свеча, чтобы осветить тебе путь в постель", titleEn: "Here Comes a Candle to Light You to Bed", seasonName: "3 СЕЗОН" },
+        { season: 3, episode: 8, url: "https://s5.lomont.site/content/stream/films/boys.s03e08_621456/hls/1080/index.m3u8", titleRu: "Мгновенная белая горячая дикость", titleEn: "The Instant White-Hot Wild", seasonName: "3 СЕЗОН" },
+
+        // ========== СЕЗОН 4 ==========
+        { season: 4, episode: 1, url: "https://s5.lomont.site/content/stream/films/the_boys.s04e01.tvshows_684965/hls/1080/index.m3u8", titleRu: "Отдел грязных трюков", titleEn: "Department of Dirty Tricks", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 2, url: "https://s5.lomont.site/content/stream/films/the.boys.s04e02.tvshows_684966/hls/1080/index.m3u8", titleRu: "Жизнь среди септиков", titleEn: "Life Among the Septics", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 3, url: "https://s5.lomont.site/content/stream/films/the.boys.s04e03.tvshows_684967/hls/1080/index.m3u8", titleRu: "Мы будем держать красный флаг здесь", titleEn: "We'll Keep the Red Flag Flying Here", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 4, url: "https://s5.lomont.site/content/stream/films/the.boys.tvshows.s04e04.1080_689614/hls/1080/index.m3u8", titleRu: "Мудрость веков", titleEn: "Wisdom of the Ages", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 5, url: "https://s5.lomont.site/content/stream/films/the.boys.tvshows.s04e05.1080_691479/hls/1080/index.m3u8", titleRu: "Берегись Бармаглота, сын мой", titleEn: "Beware the Jabberwock, My Son", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 6, url: "https://s5.lomont.site/content/stream/films/the.boys.tvshows.s04.e06_709745/hls/1080/index.m3u8", titleRu: "Грязные дела", titleEn: "Dirty Business", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 7, url: "https://s5.lomont.site/content/stream/films/the_boys.s04e07.tvshows_711699/hls/1080/index.m3u8", titleRu: "Инсайдер", titleEn: "The Insider", seasonName: "4 СЕЗОН" },
+        { season: 4, episode: 8, url: "https://s5.lomont.site/content/stream/films/the.boys.tvshows.s04e08.1080_724539/hls/1080/index.m3u8", titleRu: "Покушение на убийство", titleEn: "Assassination Run", seasonName: "4 СЕЗОН" },
+
+        // ========== ТРЕЙЛЕРЫ 5 СЕЗОНА ==========
+        { season: 5, episode: 0, url: "https://s8.opravar.online/content/stream/films/the_boys.trel.rhs_1186064/hls/720/index.m3u8", titleRu: "Трейлер 5 сезона (тизер)", titleEn: "Season 5 Trailer (Teaser)", seasonName: "ТРЕЙЛЕРЫ 5 СЕЗОНА" },
+        { season: 5, episode: 1, url: "https://s1.opravar.online/content/stream/films/the_boys__final_season_trailer_kvk_1742268/hls/1080/index.m3u8", titleRu: "Финальный трейлер 5 сезона", titleEn: "Final Season 5 Trailer", seasonName: "ТРЕЙЛЕРЫ 5 СЕЗОНА" }
+    ];
+
+    // DOM элементы
+    const video = document.getElementById('videoPlayer');
+    const currentLabelSpan = document.getElementById('currentEpisodeLabel');
+    const playlistContainer = document.getElementById('playlistContainer');
+    const loadingDiv = document.getElementById('loadingIndicator');
+    const autoplayCheckbox = document.getElementById('autoplayCheckbox');
+
+    let hls = null;
+    let currentActiveBtn = null;
+    let currentEpisodeIndex = null;
+    let autoplayEnabled = false;
+
+    // Функция загрузки эпизода
+    function loadEpisode(episode, btnElement) {
+        if (!episode || !episode.url) {
+            currentLabelSpan.innerText = `❌ Ошибка: ссылка не найдена`;
+            loadingDiv.style.display = 'none';
+            return;
+        }
+        loadingDiv.style.display = 'flex';
+        
+        if (hls) {
+            hls.destroy();
+            hls = null;
+        }
+        
+        if (currentActiveBtn) {
+            currentActiveBtn.classList.remove('active-ep');
+        }
+        if (btnElement) {
+            btnElement.classList.add('active-ep');
+            currentActiveBtn = btnElement;
+        }
+        
+        const foundIndex = episodesData.findIndex(e => e.url === episode.url);
+        if (foundIndex !== -1) currentEpisodeIndex = foundIndex;
+        
+        let displayText = `${episode.seasonName} • ${episode.episode > 0 ? episode.episode + ' серия — ' : ''}${episode.titleRu}`;
+        if (episode.seasonName === "СПЕЦВЫПУСК") displayText = `СПЕЦВЫПУСК • ${episode.titleRu}`;
+        if (episode.seasonName === "ТРЕЙЛЕРЫ 5 СЕЗОНА") displayText = `ТРЕЙЛЕР • ${episode.titleRu}`;
+        currentLabelSpan.innerText = displayText;
+        
+        const url = episode.url;
+        
+        if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = url;
+            const onLoaded = () => {
+                loadingDiv.style.display = 'none';
+                video.play().catch(e => console.warn("autoplay blocked", e));
+                video.removeEventListener('loadedmetadata', onLoaded);
+            };
+            video.addEventListener('loadedmetadata', onLoaded, { once: true });
+            video.addEventListener('error', () => {
+                loadingDiv.style.display = 'none';
+                currentLabelSpan.innerText = `${displayText} (ошибка воспроизведения)`;
+            }, { once: true });
+            video.load();
+        } else if (Hls.isSupported()) {
+            hls = new Hls({ debug: false, enableWorker: true, lowLatencyMode: false });
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                loadingDiv.style.display = 'none';
+                video.play().catch(e => console.log("autoplay заблокирован", e));
+            });
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    console.error("Fatal HLS error", data);
+                    loadingDiv.style.display = 'none';
+                    currentLabelSpan.innerText = `${displayText} (ошибка потока)`;
+                    if (hls) hls.destroy();
+                } else {
+                    loadingDiv.style.display = 'none';
+                }
+            });
+        } else {
+            loadingDiv.style.display = 'none';
+            alert("Ваш браузер не поддерживает HLS-потоки.");
+            currentLabelSpan.innerText = `${displayText} (не поддерживается)`;
+        }
+        
+        setTimeout(() => {
+            if (loadingDiv.style.display === 'flex') {
+                loadingDiv.style.display = 'none';
+                if (currentLabelSpan.innerText.includes(episode.titleRu))
+                    currentLabelSpan.innerText = `${displayText} (долгая загрузка)`;
+            }
+        }, 12000);
+    }
+
+    function playNextEpisode() {
+        if (!autoplayEnabled) return;
+        if (currentEpisodeIndex === null) return;
+        const nextIndex = currentEpisodeIndex + 1;
+        if (nextIndex >= episodesData.length) {
+            console.log("Конец всех сезонов The Boys.");
+            return;
+        }
+        const nextEpisode = episodesData[nextIndex];
+        const nextButton = document.querySelector(`.playlist-ep-btn[data-idx="${nextIndex}"]`);
+        if (nextButton) {
+            loadEpisode(nextEpisode, nextButton);
+        } else {
+            loadEpisode(nextEpisode, null);
+        }
+    }
+    
+    video.addEventListener('ended', () => { playNextEpisode(); });
+    autoplayCheckbox.addEventListener('change', (e) => { autoplayEnabled = e.target.checked; });
+
+    function buildPlaylist() {
+        const groups = new Map();
+        episodesData.forEach((ep, idx) => {
+            const key = ep.seasonName;
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push({ ...ep, originalIndex: idx });
+        });
+        
+        const order = ["1 СЕЗОН", "СПЕЦВЫПУСК", "2 СЕЗОН", "3 СЕЗОН", "4 СЕЗОН", "ТРЕЙЛЕРЫ 5 СЕЗОНА"];
+        
+        for (let seasonName of order) {
+            const eps = groups.get(seasonName);
+            if (!eps) continue;
+            const seasonDiv = document.createElement('div');
+            seasonDiv.className = `playlist-season`;
+            seasonDiv.innerHTML = `<div class="playlist-season-title">${seasonName}</div><div class="playlist-episodes" id="playlist-season-${seasonName.replace(/\s/g, '')}"></div>`;
+            playlistContainer.appendChild(seasonDiv);
+            const episodesContainer = seasonDiv.querySelector('.playlist-episodes');
+            
+            eps.forEach(ep => {
+                const btn = document.createElement('button');
+                btn.className = 'playlist-ep-btn';
+                btn.setAttribute('data-season', ep.season);
+                btn.setAttribute('data-episode', ep.episode);
+                btn.setAttribute('data-idx', ep.originalIndex);
+                let title = `${ep.episode > 0 ? ep.episode + ' серия — ' : ''}${ep.titleRu}`;
+                if (ep.seasonName === "СПЕЦВЫПУСК") title = ep.titleRu;
+                if (ep.seasonName === "ТРЕЙЛЕРЫ 5 СЕЗОНА") title = ep.titleRu;
+                btn.innerHTML = `<div class="episode-ru">${title}</div><div class="episode-en">${ep.titleEn}</div>`;
+                btn.addEventListener('click', () => loadEpisode(ep, btn));
+                episodesContainer.appendChild(btn);
+            });
+        }
+        
+        if (episodesData.length) {
+            const firstEp = episodesData[0];
+            const firstBtn = document.querySelector(`.playlist-ep-btn[data-idx="0"]`);
+            if (firstBtn) loadEpisode(firstEp, firstBtn);
+            else loadEpisode(firstEp, null);
+        }
+    }
+    
+    buildPlaylist();
+    
+    video.addEventListener('error', () => { loadingDiv.style.display = 'none'; });
+    video.addEventListener('playing', () => { loadingDiv.style.display = 'none'; });
+    video.addEventListener('waiting', () => { if (!video.paused) loadingDiv.style.display = 'flex'; });
+    video.addEventListener('canplay', () => { loadingDiv.style.display = 'none'; });
+    video.addEventListener('stalled', () => { loadingDiv.style.display = 'flex'; });
+</script>
+</body>
+</html>
